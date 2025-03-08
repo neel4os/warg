@@ -2,6 +2,7 @@ package boilerplate
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog/log"
 )
 
 type Service struct {
@@ -21,9 +22,14 @@ func NewService(serviceName string,
 }
 
 func (s *Service) Initialize() {
+	log.Debug().Caller().Msg("initializing service")
 	s.Controller.Init()
 }
 
 func (s *Service) Run() {
 	s.Controller.Run()
+}
+
+func (s *Service) Close() {
+	s.Controller.Close()
 }
