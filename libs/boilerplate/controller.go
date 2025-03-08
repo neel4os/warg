@@ -23,8 +23,10 @@ func NewController(c ConfigIface, deps map[string]Dependent, routeDefnFn func(*e
 }
 
 func (c *Controller) Init() {
+	log.Debug().Caller().Msg("initializing controller")
 	// in init method we check if dependencies are live or not
 	for name, dependency := range c.Dependents {
+		log.Debug().Caller().Msg("pinging " + name)
 		err := dependency.Ping()
 		if err != nil {
 			log.Fatal().Err(err).Caller().Msg("did not able to ping " + name)
@@ -33,14 +35,30 @@ func (c *Controller) Init() {
 	// create components first. Here because AddDependency will execute after New
 
 	// and init components
-	for _, component := range c.Components {
+	for name, component := range c.Components {
+		log.Debug().Caller().Msg("initializing " + name + " component")
 		component.Init()
 	}
 
 }
 
 func (c *Controller) Run() {
-	for _, component := range c.Components {
-		component.Run()
+	for name, component := range c.Components {
+		log.Debug().Caller().Msg("running " + name + " component")
+		go component.Run()
+	}
+}
+
+func (c *Controller) Close() {
+	for name, dependency := range c.Dependents {
+		log.Debug().Caller().Msg("closing dependency " + name)
+		err := dependency.Close()
+		if err != nil {
+			log.Error().Err(err).Caller().Msg("did not able to ping " + name)
+		}
+	}
+	for name, component := range c.Components {
+		log.Debug().Caller().Msg("stopping " + name + " component")
+		component.Stop()
 	}
 }

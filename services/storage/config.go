@@ -10,6 +10,7 @@ import (
 type Config struct {
 	ServerOptions  ServerOptions
 	PostgresConfig PostgresConfig
+	LoggerConfig LoggerConfig
 }
 
 type ServerOptions struct {
@@ -26,10 +27,10 @@ type PostgresConfig struct {
 	SSLMode  string `env:"POSTGRES_SSLMODE" envDefault:"disable"`
 }
 
-// func (c *Config) Validate() error {
-// 	cfg := Config{}
-// 	return env.Parse(&cfg)
-// }
+type LoggerConfig struct {
+	IsDebug bool `env:"LOGGER_DEBUG" envDefault:"true"`
+}
+
 
 func (c *Config) GetDsn() string {
 	return fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s",

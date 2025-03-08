@@ -1,6 +1,7 @@
 package boilerplate
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -63,5 +64,10 @@ func (h *HttpComponents) Run() {
 }
 
 func (h *HttpComponents) Stop() {
-
+	ctx, cancel := context.WithTimeout(context.Background(), 5)
+	defer cancel()
+	err := h.e.Shutdown(ctx)
+	if err != nil {
+		log.Error().Err(err).Caller().Msg("not able to shutdown server within grace period")
+	}
 }
