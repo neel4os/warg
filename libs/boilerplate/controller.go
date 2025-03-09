@@ -27,10 +27,7 @@ func (c *Controller) Init() {
 	// in init method we check if dependencies are live or not
 	for name, dependency := range c.Dependents {
 		log.Debug().Caller().Msg("pinging " + name)
-		err := dependency.Ping()
-		if err != nil {
-			log.Fatal().Err(err).Caller().Msg("did not able to ping " + name)
-		}
+		dependency.Ping()
 	}
 	// create components first. Here because AddDependency will execute after New
 

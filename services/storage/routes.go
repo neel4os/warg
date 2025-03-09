@@ -14,4 +14,5 @@ func Routes(e *echo.Echo, deps map[string]boilerplate.Dependent, cfg boilerplate
 	h := NewStorageHandler(deps, cfg)
 	v0 := e.Group("api/v0")
 	v0.GET("/health", h.GetHealth)
+	v0.POST("/storage", h.CreateStorage)
 }

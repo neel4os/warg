@@ -32,10 +32,14 @@ func NewPgClient(dsn string) *PgClient {
 	}
 }
 
-func (p *PgClient) Ping() error {
-	return p.sqlCon.Ping()
+func (p *PgClient) Ping() {
+	err := p.sqlCon.Ping()
+	if err != nil {
+		log.Fatal().Err(err).Caller().Msg("failed to ping")
+	}
 }
 
-func (p *PgClient) Close() error{
+func (p *PgClient) Close() error {
 	return p.sqlCon.Close()
 }
+

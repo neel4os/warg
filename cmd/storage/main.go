@@ -21,9 +21,18 @@ func main() {
 	}
 	log.Debug().Msg("Debug mode for logger : Activated")
 	dependencyMaps := make(map[string]boilerplate.Dependent)
-	dependencyMaps["postgres"] = clients.NewPgClient(config.GetDsn())
+	dbclient := clients.NewPgClient(config.GetDsn())
+	dependencyMaps["postgres"] = dbclient
+	dependencyMaps["objectstorage"] = storage.NewS3Client(config.ObjectStorageConfig)
 	storageService := boilerplate.NewService("storage", &config, dependencyMaps, storage.Routes)
 	storageService.Initialize()
+	// do the migration here
+	log.Debug().Caller().Msg("initiating migration")
+	err := dbclient.Dbcon.AutoMigrate(&storage.Storage{})
+	if err != nil {
+		log.Fatal().Err(err).Caller().Msg("did not able to do migration")
+	}
+	log.Debug().Caller().Msg("migration successful")
 	exit := make(chan os.Signal, 1)
 	signal.Notify(exit, os.Interrupt, syscall.SIGABRT, syscall.SIGTERM, syscall.SIGQUIT)
 	storageService.Run()

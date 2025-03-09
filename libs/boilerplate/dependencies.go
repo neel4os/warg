@@ -1,6 +1,6 @@
 package boilerplate
 
 type Dependent interface {
-	Ping() error
+	Ping()
 	Close() error
 }
