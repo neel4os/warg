@@ -9,7 +9,6 @@ import (
 	"crypto/sha256"
 
 	"github.com/labstack/echo/v4"
-	"github.com/rs/zerolog/log"
 )
 
 func (h *StorageHandler) CreateStorage(c echo.Context) error {
@@ -31,10 +30,11 @@ func (h *StorageHandler) CreateStorage(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "could not compute hash of the file "+_storage.Filename)
 	}
 	_storage.FileHash = hex.EncodeToString(_hash.Sum(nil))
-	_storage.UploadStatus = UploadPending
-	log.Info().Interface("storage", _storage).Msg("value")
-	log.Info().Msg(filename.Filename)
+	_storage.TaskStatus = TaskPending
 	domainObj := NewStorageDomain(h.deps)
+	asyncTask := NewUploadTask(domainObj.repo,
+		h.deps["objectstorage"].(*S3Client),
+		filename.Filename, src)
 	sin, err := domainObj.Create(&_storage)
 	if err != nil {
 		var customErr StorageError
@@ -48,5 +48,7 @@ func (h *StorageHandler) CreateStorage(c echo.Context) error {
 			return c.JSON(http.StatusInternalServerError, err)
 		}
 	}
+
+	go asyncTask.Execute(sin.Id)
 	return c.JSON(http.StatusAccepted, sin)
 }

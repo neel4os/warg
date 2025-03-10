@@ -2,6 +2,9 @@ package storage
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"mime/multipart"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -60,5 +63,41 @@ func (s *S3Client) Ping() {
 
 func (s *S3Client) Close() error {
 	return nil
+
+}
+
+func (s *S3Client) PutFileInBucket(filename string, content multipart.File) error {
+	_, err := s.client.PutObject(context.Background(), &s3.PutObjectInput{
+		Bucket:            &s.expectedBUcketName,
+		Key:               &filename,
+		Body:              content,
+		ChecksumAlgorithm: types.ChecksumAlgorithmSha256,
+	})
+	if err != nil {
+		return StorageError{
+			ErrorCode:       UnableToUploadFile,
+			Message:         fmt.Sprintf("unable to upload %s", filename),
+			DetailedMessage: err.Error(),
+		}
+	}
+	return nil
+}
+
+func (s *S3Client) IsFileExistOnBucket(filename string) (bool, error) {
+	// throws error if encountred other than no key exist
+	// true if exist
+	// false if does not
+	_, err := s.client.GetObject(context.Background(), &s3.GetObjectInput{
+		Bucket: &s.expectedBUcketName,
+		Key:    &filename,
+	})
+	if err != nil {
+		var nokey *types.NoSuchKey
+		if errors.As(err, &nokey) {
+			return false, nil
+		}
+		return false, err
+	}
+	return true, nil
 
 }

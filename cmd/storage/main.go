@@ -28,7 +28,7 @@ func main() {
 	storageService.Initialize()
 	// do the migration here
 	log.Debug().Caller().Msg("initiating migration")
-	err := dbclient.Dbcon.AutoMigrate(&storage.Storage{})
+	err := dbclient.Dbcon.AutoMigrate(&storage.Storage{}, &storage.InternalEvent{})
 	if err != nil {
 		log.Fatal().Err(err).Caller().Msg("did not able to do migration")
 	}
