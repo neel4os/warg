@@ -20,5 +20,7 @@ func NewStorageHandler(deps map[string]boilerplate.Dependent, cfg boilerplate.Co
 }
 
 func (h *StorageHandler) GetHealth(c echo.Context) error {
-	return c.JSON(http.StatusOK, "OK")
+	return c.JSON(http.StatusOK, Health{Status: "OK"})
 }
+
+
