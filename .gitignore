@@ -27,5 +27,5 @@ go.work.sum
 # dev-env
 dev-env/
 .vscode/
-**/.air.toml
+**/.air.*.toml
 tmp/
