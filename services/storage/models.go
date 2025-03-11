@@ -31,11 +31,11 @@ type Storage struct {
 	StorageCreationRequest
 	FileHash   string     `json:"file_hash" gorm:"unique;not null"`
 	FileSize   int64      `json:"file_size" gorm:"not null"`
-	TaskStatus TaskStatus `json:"Task_status" gorm:"not null;default:0"`
+	TaskStatus TaskStatus `json:"task_status" gorm:"not null;default:0"`
 }
 
 type StorageCreationRequest struct {
-	Filename string `form:"filename" gorm:"not null"`
+	Filename string `json:"filename" gorm:"not null"`
 }
 
 type InternalEvent struct {

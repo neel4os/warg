@@ -1,12 +1,11 @@
 package storage
 
 import (
+	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"io"
 	"net/http"
-
-	"crypto/sha256"
 
 	"github.com/labstack/echo/v4"
 )
@@ -34,7 +33,7 @@ func (h *StorageHandler) CreateStorage(c echo.Context) error {
 	domainObj := NewStorageDomain(h.deps)
 	asyncTask := NewUploadTask(domainObj.repo,
 		h.deps["objectstorage"].(*S3Client),
-		filename.Filename, src)
+		filename)
 	sin, err := domainObj.Create(&_storage)
 	if err != nil {
 		var customErr StorageError

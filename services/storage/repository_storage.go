@@ -34,17 +34,21 @@ func (sr *StorageRepo) Create(sin *Storage) (*Storage, error) {
 	return sin, nil
 }
 
-func (sr *StorageRepo) UpdateTaskStatus(storageID uuid.UUID, status TaskStatus) error {
-	result := sr.dbcon.Model(Storage{}).Where("id = ?", storageID).Update("upload_status", status)
-	if result.RowsAffected == 0 {
-		return StorageError{
-			ErrorCode: NoRecordFound,
-			Message:   "no record found for " + storageID.String(),
+func (sr *StorageRepo) UpdateTaskStatus(storageID uuid.UUID, status TaskStatus, publish_event bool, event *InternalEvent) error {
+	sr.dbcon.Transaction(func(tx *gorm.DB) error {
+		result := tx.Model(Storage{}).Where("id = ?", storageID).Update("task_status", status)
+		if result.Error != nil {
+			return result.Error
 		}
-	}
-	if result.Error != nil {
-		return result.Error
-	}
+		if publish_event {
+			event := tx.Create(event)
+			if event.Error != nil {
+				return event.Error
+			}
+			return nil
+		}
+		return nil
+	})
 	return nil
 }
 
@@ -63,4 +67,3 @@ func (sr *StorageRepo) GetStorageById(storageID uuid.UUID) (*Storage, error) {
 	}
 	return &_st, nil
 }
-

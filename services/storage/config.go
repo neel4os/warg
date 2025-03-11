@@ -23,7 +23,7 @@ type PostgresConfig struct {
 	Host     string `env:"POSTGRES_HOST" envDefault:"localhost"`
 	Port     int    `env:"POSTGRES_HOST" envDefault:"5433"`
 	Database string `env:"POSTGRES_DB" envDefault:"storage"`
-	Username string `env:"POSTGRES_USER" envDefault:"warg"`
+	Username string `env:"POSTGRES_USER" envDefault:"postgres"`
 	Password string `env:"POSTGRES_PASSWORD" envDefault:"postgres123"`
 	SSLMode  string `env:"POSTGRES_SSLMODE" envDefault:"disable"`
 }

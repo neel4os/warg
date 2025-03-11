@@ -3,8 +3,7 @@ package storage
 import (
 	"context"
 	"errors"
-	"fmt"
-	"mime/multipart"
+	"io"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
@@ -37,7 +36,6 @@ func NewS3Client(config ObjectStorageConfig) *S3Client {
 		expectedBUcketName: config.BucketName,
 		region:             config.Region,
 	}
-
 }
 
 func (s *S3Client) Ping() {
@@ -58,15 +56,14 @@ func (s *S3Client) Ping() {
 	} else {
 		log.Debug().Caller().Msgf("bucket %s exist", s.expectedBUcketName)
 	}
-
 }
 
 func (s *S3Client) Close() error {
 	return nil
-
 }
 
-func (s *S3Client) PutFileInBucket(filename string, content multipart.File) error {
+func (s *S3Client) PutFileInBucket(filename string, content io.Reader) error {
+	log.Debug().Caller().Interface("content", content).Msg("putting file in bucket")
 	_, err := s.client.PutObject(context.Background(), &s3.PutObjectInput{
 		Bucket:            &s.expectedBUcketName,
 		Key:               &filename,
@@ -74,11 +71,8 @@ func (s *S3Client) PutFileInBucket(filename string, content multipart.File) erro
 		ChecksumAlgorithm: types.ChecksumAlgorithmSha256,
 	})
 	if err != nil {
-		return StorageError{
-			ErrorCode:       UnableToUploadFile,
-			Message:         fmt.Sprintf("unable to upload %s", filename),
-			DetailedMessage: err.Error(),
-		}
+		log.Error().Err(err).Caller().Msg("unable to put file in bucket")
+		return err
 	}
 	return nil
 }
@@ -92,6 +86,7 @@ func (s *S3Client) IsFileExistOnBucket(filename string) (bool, error) {
 		Key:    &filename,
 	})
 	if err != nil {
+		log.Error().Err(err).Caller().Msg("unable to decide if file is in bucket")
 		var nokey *types.NoSuchKey
 		if errors.As(err, &nokey) {
 			return false, nil
@@ -99,5 +94,4 @@ func (s *S3Client) IsFileExistOnBucket(filename string) (bool, error) {
 		return false, err
 	}
 	return true, nil
-
 }
