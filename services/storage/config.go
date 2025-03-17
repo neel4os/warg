@@ -30,7 +30,7 @@ type PostgresConfig struct {
 
 type ObjectStorageConfig struct {
 	Type       string `env:"STORAGE_TYPE" envDefault:"s3"`
-	Url        string `env:"STORAGE_URL" envDefault:"http://localhost:9000"`
+	Url        string `env:"STORAGE_URL" envDefault:"http://localhost:50001"`
 	AccessKey  string `env:"STORAGE_ACCESSKEY" envDefault:"minioadmin"`
 	SecretKey  string `env:"STORAGE_SECRETKEY" envDefault:"minioadmin"`
 	Region     string `env:"STORAGE_REGION" envDefault:"us-east-1"`

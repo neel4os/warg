@@ -15,14 +15,14 @@ type Config struct {
 }
 
 type ServerOptions struct {
-	Port         int  `env:"SERVER_PORT" envDefault:"9999"`
-	TLSActivated bool `env:"SERVER_HOST" envDefault:"false"`
+	Port         int  `env:"SERVER_PORT" envDefault:"9998"`
+	TLSActivated bool `env:"TLS_ACTIVATED" envDefault:"false"`
 }
 
 type PostgresConfig struct {
 	Host     string `env:"POSTGRES_HOST" envDefault:"localhost"`
 	Port     int    `env:"POSTGRES_HOST" envDefault:"5433"`
-	Database string `env:"POSTGRES_DB" envDefault:"storage"`
+	Database string `env:"POSTGRES_DB" envDefault:"experiments"`
 	Username string `env:"POSTGRES_USER" envDefault:"postgres"`
 	Password string `env:"POSTGRES_PASSWORD" envDefault:"postgres123"`
 	SSLMode  string `env:"POSTGRES_SSLMODE" envDefault:"disable"`
