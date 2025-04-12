@@ -1,0 +1,149 @@
+openapi: "3.0.4"
+info:
+  title: API for Warg Studio
+  summary: Warg Studio API
+  description: >
+    This API provides a comprehensive set of endpoints for interacting with Warg Studio's
+    resources
+  version: "1.0"
+  tags:
+    - name: Health
+      description: Health related endpoints
+    - name: Accounts
+      description: Endpoints for managing user accounts
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /health:
+    get:
+      tags:
+        - Health
+      operationId: checkHealth
+      summary: Health check endpoint
+      description: >
+        This endpoint can be used to check the health of the API
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+        "default":
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+  /onboard:
+    post:
+      tags:
+        - Accounts
+      operationId: onboardAccount
+      summary: Onboard an account
+      description: >
+        This endpoint aims to onboard a new account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OnboardingRequest"
+      responses:
+        "202":
+          description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OnboardingResponse"
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+        "default":
+          description: Error response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorModel"
+components:
+  schemas:
+    OnboardingResponse:
+      type: object
+      required:
+        - onboarding_id
+      properties:
+        onboarding_id:
+          type: string
+          description: The status of the onboarding request
+          uuid: true
+          example: "123e4567-e89b-12d3-a456-426614174000"
+
+    OnboardingRequest:
+      type: object
+      required:
+        - account_name
+        - first_name
+        - last_name
+        - email
+      properties:
+        account_name:
+          type: string
+          description: The name of the account to be onboarded
+          example: "Acme"
+        first_name:
+          type: string
+          description: The first name of the user
+          example: "John"
+        last_name:
+          type: string
+          description: The last name of the user
+          example: "Doe"
+        email:
+          type: string
+          description: The email address of the user
+          example: "johndoe@acme.com"
+    ErrorModel:
+      type: object
+      required:
+        - error_code
+        - message
+      properties:
+        error_code:
+          type: string
+          description: The error code
+          example: "WARG-001"
+        message:
+          type: string
+          description: The error message
+          example: "Internal server error"
+        detailed_message:
+          type: string
+          description: A detailed error message
+          example: "An internal server error occurred while processing the request"
+    Health:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          description: The status of the API
+          enum:
+            - "Up"
+            - "Degraded"
+          example: "Up"

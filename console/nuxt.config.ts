@@ -4,7 +4,7 @@ import materialIconsRound from 'quasar/icon-set/svg-material-icons-round'
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
-
+  ssr: true,
   modules: [
     '@nuxt/content',
     '@nuxt/eslint',
@@ -13,8 +13,27 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxt/scripts',
     '@nuxt/test-utils',
-    'nuxt-quasar-ui'
+    'nuxt-quasar-ui',
+    'nuxt-oidc-auth'
   ],
+  oidc: {
+    defaultProvider: 'keycloak',
+    providers: {
+      keycloak: {
+        audience: 'account',
+        baseUrl: '',
+        clientId: '',
+        clientSecret: '',
+        redirectUri: 'http://localhost:9999/auth/keycloak/callback',
+        userNameClaim: 'preferred_username',
+        logoutRedirectUri: 'http://localhost:9999/',  // Target of your post logout redirection
+      },
+    },
+    middleware:{
+      globalMiddlewareEnabled: true,
+      customLoginPage: true,
+    }
+  },
   quasar: {
     plugins: ['Dark','Dialog', 'Notify'],
     sassVariables: true,

@@ -1,0 +1,9 @@
+package: pkg
+output: ./pkg/warg.gen.go
+generate:
+  models: true
+  echo-server: true
+  # strict-server: true
+output-options:
+  skip-prune: true
+  nullable-type: true
